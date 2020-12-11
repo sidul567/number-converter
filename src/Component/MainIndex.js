@@ -12,6 +12,7 @@ class MainIndex extends Component {
          hexadecimal:0,
          binaryarr:[],
          textArr:[],
+         decimalArr:[],
          invalidBinary:false,
          checkValid:''
         };
@@ -21,6 +22,7 @@ class MainIndex extends Component {
         this.handleChangeHexadecimal = this.handleChangeHexadecimal.bind(this)
         this.textToBinary = this.textToBinary.bind(this)
         this.binaryToText = this.binaryToText.bind(this)
+        this.decimalToBinary = this.decimalToBinary.bind(this)
     }
     handleChangeDecimal(e){
        var value = e.target.value
@@ -72,9 +74,13 @@ class MainIndex extends Component {
         var binaryArray = charCodeArray.map(char=>{
             return char.toString(2);
         })
+        var decimalArray = charCodeArray.map(ch=>{
+            return ch;
+        })
         binaryArray = binaryArray.join(' ')
-        this.setState({binaryarr:binaryArray})
-        return binaryArray;
+        decimalArray = decimalArray.join(' ')
+        this.setState({binaryarr:binaryArray,decimalArr:decimalArray})
+        return {binaryArray,decimalArray};
     }
 
     binaryToText(codeArray){
@@ -94,13 +100,49 @@ class MainIndex extends Component {
                 }
             }
         }
-        console.log(text);
-        this.setState({textArr:text})
+        var decimalArray = splitIt.map(ch=>{
+            return (parseInt(ch,2)||'');
+        })
+        decimalArray = decimalArray.join(' ');
+        this.setState({textArr:text,decimalArr:decimalArray})
+        return text;
+    }
+
+    decimalToBinary(codeArray){
+        const val = codeArray.target.value;
+        this.setState({decimalArr:val});
+        var text = " "
+        var splitIt = val.split(' ');
+        for(let i of splitIt){
+            var ch = String.fromCharCode(parseInt(i));
+            if(ch<' ' && ch!='\n'){
+                ch = '';
+            }
+            text = text.concat(ch);
+            for(let j in splitIt){
+                console.log(splitIt[j])
+                if((splitIt[j]<32) && splitIt[j]!=32 && splitIt[i]!=' '){
+                    console.log(val[j])
+                    this.setState({checkValid:'Invalid Input'});
+                    // this.setState({textArr:[]})
+
+                }else{
+                    this.setState({checkValid:''});
+                }
+            }
+        }
+        var binaryArray = splitIt.map(ch=>{
+            var value = parseInt(ch)||'';
+            var bin = value.toString(2);
+            return bin;
+        })
+        binaryArray = binaryArray.join(' ')
+        this.setState({textArr:text,binaryarr:binaryArray})
         return text;
     }
 
     ResetText = ()=>{
-        this.setState({binaryarr:[],textArr:[]})
+        this.setState({binaryarr:[],textArr:[],decimalArr:[]})
     }
 
     render() {
@@ -145,6 +187,11 @@ class MainIndex extends Component {
                     <div className="input-group">
                         <label>Enter your text below:</label>
                         <textarea name="text-decimal" id="" cols="30" rows="10" value={this.state.textArr} onChange={this.textToBinary}/>
+                    </div>
+                    <div className="half-rem-space"></div>
+                    <div className="input-group">
+                        <label>Enter your Decimal below:</label>
+                        <textarea name="text-decimal" id="" cols="30" rows="10" value={this.state.decimalArr} onChange={this.decimalToBinary}/>
                     </div>
                     <div className="half-rem-space"></div>
                     <div className="input-group">
